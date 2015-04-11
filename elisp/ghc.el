@@ -48,6 +48,11 @@
 ;;; Customize Variables
 ;;;
 
+(defcustom ghc-auto-check t
+  "Whether to the source file with ghc-mod when a haskell-mode buffer is created or saved."
+  :type 'boolean
+  :group 'ghc)
+
 (defun ghc-find-C-h ()
   (or
    (when keyboard-translate-table
@@ -117,9 +122,9 @@
     (setq ghc-initialized t)
     (defadvice save-buffer (after ghc-check-syntax-on-save activate)
       "Check syntax with GHC when a haskell-mode buffer is saved."
-      (when (eq 'haskell-mode major-mode) (ghc-check-syntax))))
+      (when (and ghc-auto-check (eq 'haskell-mode major-mode) (ghc-check-syntax)))))
   (ghc-import-module)
-  (ghc-check-syntax))
+  (when ghc-auto-check (ghc-check-syntax)))
 
 (defun ghc-abbrev-init ()
   (set (make-local-variable 'dabbrev-case-fold-search) nil))

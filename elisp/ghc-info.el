@@ -10,6 +10,7 @@
 
 (require 'ghc-func)
 (require 'ghc-process)
+(require 'flycheck)
 
 (defun ghc-show-info (&optional ask)
   (interactive "P")
@@ -22,7 +23,7 @@
        (lambda () (insert info))))))
 
 (defun ghc-get-info (expr)
-  (let* ((file (buffer-file-name))
+  (let* ((file (flycheck-save-buffer-to-temp #'flycheck-temp-file-system))
 	 (cmd (format "info %s %s\n" file expr)))
     (ghc-sync-process cmd)))
 
@@ -109,7 +110,7 @@
 (defun ghc-type-obtain-tinfos ()
   (let* ((ln (int-to-string (line-number-at-pos)))
 	 (cn (int-to-string (1+ (current-column))))
-	 (file (buffer-file-name))
+	 (file (flycheck-save-buffer-to-temp #'flycheck-temp-file-system))
 	 (cmd (format "type %s %s %s\n" file ln cn)))
     (ghc-sync-process cmd nil 'ghc-type-fix-string)))
 
